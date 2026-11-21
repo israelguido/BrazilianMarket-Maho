@@ -143,6 +143,24 @@
         return position;
     }
 
+    function updateCpfCnpjLabel(input, cnpjMode) {
+        if (!input.id) {
+            return;
+        }
+        const label = document.querySelector('label[for="' + CSS.escape(input.id) + '"]');
+        if (!label) {
+            return;
+        }
+        if (!label.dataset.cpfLabel) {
+            label.dataset.cpfLabel = (label.textContent || 'CPF').trim() || 'CPF';
+        }
+        const next = cnpjMode ? 'CNPJ' : label.dataset.cpfLabel;
+        if (label.textContent !== next) {
+            label.textContent = next;
+        }
+        input.title = next;
+    }
+
     /**
      * Aplica máscara de CPF/CNPJ
      */
@@ -191,6 +209,7 @@
             const value = formatCpfCnpj(chars);
 
             target.value = value;
+            updateCpfCnpjLabel(target, cnpjMode);
 
             const newCharLength = chars.length;
             const oldCharLength = oldChars.length;
@@ -219,6 +238,8 @@
                 oldValue = target.value;
             }, 0);
         });
+
+        updateCpfCnpjLabel(input, isCnpjMode(sanitizeCpfCnpjInput(input.value)));
     }
 
     const POSTCODE_SELECTOR = 'input[name="billing[postcode]"], input[name="shipping[postcode]"], input[name="postcode"], input[name="estimate_postcode"]';
